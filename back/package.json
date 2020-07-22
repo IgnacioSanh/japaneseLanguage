@@ -1,0 +1,28 @@
+{
+  "name": "my-mern-base",
+  "version": "1.0.0",
+  "description": "MERN base boilerplate for projects",
+  "main": "index.js",
+  "scripts": {
+    "backend": "nodemon index.js"
+  },
+  "keywords": [
+    "boilerplate",
+    "mern"
+  ],
+  "author": "Ignacio Sanhueza",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.4.20",
+    "node-localstorage": "^2.1.6"
+  },
+  "devDependencies": {
+    "cors": "^2.8.5",
+    "winston": "^3.2.1"
+  }
+}
