@@ -89,7 +89,7 @@ class Library extends Component {
           </this.Alert>
         </Snackbar>
         <Grid item xs={12}>
-          <Typography variant="h2">Library</Typography>
+          <Typography variant="h2">Library PO</Typography>
           <Typography variant="subtitle1">
             {wordCount} words in total
           </Typography>
