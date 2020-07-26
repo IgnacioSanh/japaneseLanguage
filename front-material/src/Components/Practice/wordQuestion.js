@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Switch, Route, withRouter } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
@@ -39,12 +39,21 @@ const returnContent = (word, hasWords, getWord, type) => {
 };
 
 //This is the export default
-const WordQuestion = ({ word, hasWords, getWord }) => {
+const WordQuestion = (props) => {
   const classes = useStyles();
   return (
     <Grid item xs={12}>
       <Paper className={classes.wordPaper} elevation={6}>
-        {returnContent(word, hasWords, getWord)}
+        {/* {returnContent(word, hasWords, getWord)} */}
+        {/* <Typography variant="h3">Hola</Typography> */}
+        <Switch>
+          <Route path="/practice/vocabulary/:type">
+            <Typography>Jap 2 Spanish</Typography>
+          </Route>
+          <Route path="/practice/">
+            <Typography>Spanish 2 Jap</Typography>
+          </Route>
+        </Switch>
       </Paper>
     </Grid>
   );
@@ -175,4 +184,4 @@ const StartTest = ({ getWord }) => {
   );
 };
 
-export default WordQuestion;
+export default withRouter(WordQuestion);

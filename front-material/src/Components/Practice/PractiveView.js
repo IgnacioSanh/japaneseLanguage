@@ -1,103 +1,80 @@
 import React, { Component } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
+import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import Avatar from "@material-ui/core/Avatar";
+import Hidden from "@material-ui/core/Hidden";
 import Toast from "../Common/Toast";
+import { Switch, Route, Link } from "react-router-dom";
 
 // Own creation
-import { getPracticeWords } from "../../Services/wordService";
-import WordQuestion from "./wordQuestion";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  paper: {
-    padding: theme.spacing(5),
-    textAlign: "center",
-  },
-  wordPaper: {
-    height: 400,
-    textAlign: "center",
-    padding: theme.spacing(3),
-    paddingBottom: 0,
-  },
-  title: {
-    marginBottom: theme.spacing(2),
-  },
-}));
+import WordPractice from "./wordPractice";
+import Scoreboard from "./Score";
 
 class PracticeView extends Component {
-  async componentDidMount() {
-    const { words: practiceWords } = await getPracticeWords(
-      "5f11dbed64aebf129629a9fc"
-    );
-    const hasWords = practiceWords.length > 0;
-    this.setState({ practiceWords, hasWords });
-  }
-
   state = {
-    practiceWords: [],
-    answeredWords: [],
-    score: [0, 0, 0],
-    currentWord: undefined,
-    hasWords: false,
-    toast: { open: false, message: "" },
+    //scoreArray: [correct, wrong, strike, maxStrike]
+    scoreArray: [0, 0, 0, 0],
+    toast: { open: false, message: "", severity: "info" },
   };
 
-  getCurrentWord = (prevWord) => {
-    if (prevWord) {
-      const { score } = this.state;
-      if (prevWord.correct) {
-        score[0] += 1;
-        score[2] += 1;
-        const openSuccess = {
-          open: true,
-          message: `Correct!. The answer was: ${prevWord.meaning}`,
-          severity: "success",
-        };
-        this.setState({ toast: openSuccess });
-      } else {
-        score[1] += 1;
-        score[2] = 0;
-        const openFail = {
-          open: true,
-          message: `Wrong! The answer was: ${prevWord.meaning}`,
-          severity: "error",
-        };
-        this.setState({ toast: openFail });
-      }
-      this.setState({ score });
-    }
-    const { practiceWords } = this.state;
-    if (practiceWords.length === 0) return undefined;
-    const index = Math.floor(Math.random() * practiceWords.length);
-    const currentWord = practiceWords[index];
-    practiceWords.splice(index, 1);
+  resetScore = () => {
+    const scoreArray = [0, 0, 0, 0];
+    this.setState({ scoreArray });
+  };
 
-    this.setState({ currentWord, practiceWords });
+  setScore = (correct, realAnswer) => {
+    let score = [...this.state.scoreArray];
+    let toastConfig = {};
+    //Right answer
+    if (correct) {
+      score[0] += 1;
+      score[2] += 1;
+      if (score[3] < score[2]) score[3] = score[2];
+      toastConfig = {
+        open: true,
+        message: `Correct!. The answer was: ${realAnswer}`,
+        severity: "success",
+      };
+    } else {
+      score[1] += 1;
+      score[2] = 0;
+      toastConfig = {
+        open: true,
+        message: `Wrong! The answer was: ${realAnswer}`,
+        severity: "error",
+      };
+    }
+    this.setState({ toast: toastConfig });
+    this.setState({ scoreArray: score });
   };
 
   render() {
-    const { currentWord, hasWords, score } = this.state;
+    const { scoreArray } = this.state;
     const { open, message, severity } = this.state.toast;
     return (
       <div styles={{ flexGrow: 1 }}>
-        <Grid container spacing={1}>
-          <Grid container item xs={12} spacing={3}>
-            <Typography variant="h2">Practice</Typography>
+        <Grid container direction="column" spacing={2}>
+          <Hidden xsDown={true}>
+            <Grid item xs={12}>
+              <Typography variant="h2">Practice</Typography>
+            </Grid>
+          </Hidden>
+          <Grid item xs={12} sm={6}>
+            <Scoreboard score={scoreArray} />
           </Grid>
-          <Grid container item sm={3}>
-            <Score right={score[0]} wrong={score[1]} strike={score[2]} />
-          </Grid>
-          <Grid container item sm={6}>
-            <WordQuestion
-              word={currentWord}
-              hasWords={hasWords}
-              getWord={this.getCurrentWord}
-            />
+          <Grid item xs={12} sm={6}>
+            <Switch>
+              <Route
+                path="/practice/:mode"
+                render={() => (
+                  <WordPractice
+                    setScore={this.setScore}
+                    resetScore={this.resetScore}
+                  />
+                )}
+              ></Route>
+              <Route path="/practice" exact component={PracticeMenu}></Route>
+            </Switch>
           </Grid>
         </Grid>
         <Toast open={open} message={message} severity={severity} />
@@ -106,31 +83,44 @@ class PracticeView extends Component {
   }
 }
 
-const Score = ({ right, wrong, strike }) => {
-  const classes = useStyles();
+const PracticeMenu = () => {
   return (
-    <Grid container item xs={12} direction="column" spacing={1}>
-      <Paper className={classes.paper} elevation={4}>
-        <Grid container item justify="center" alignItems="center" spacing={2}>
-          <CounterBox text="Rights" counter={right} />
-          <CounterBox text="Wrongs" counter={wrong} />
-          <CounterBox text="Strike" counter={strike} />
-        </Grid>
-      </Paper>
-    </Grid>
-  );
-};
-
-const CounterBox = ({ text = "Counter", counter = 0 }) => {
-  const classes = useStyles();
-  return (
-    <Grid item xs={8}>
-      <Paper className={classes.paper}>
-        <Typography>{text}</Typography>
-        <Grid container item justify="center">
-          <Avatar className={classes.orange}>{counter}</Avatar>
-        </Grid>
-      </Paper>
+    <Grid container item direction="column" spacing={2}>
+      <Grid item>
+        <Typography variant="subtitle1">Pick an option</Typography>
+      </Grid>
+      <Grid item>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          component={Link}
+          to="/practice/original"
+        >
+          From language to native
+        </Button>
+      </Grid>
+      <Grid item>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          component={Link}
+          to="/practice/meaning"
+        >
+          From native to language
+        </Button>
+      </Grid>
+      <Grid item>
+        <Button variant="contained" color="primary" fullWidth>
+          Numbers
+        </Button>
+      </Grid>
+      <Grid item>
+        <Button variant="contained" color="primary" fullWidth>
+          Sentences
+        </Button>
+      </Grid>
     </Grid>
   );
 };
