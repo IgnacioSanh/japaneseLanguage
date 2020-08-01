@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -41,7 +41,7 @@ const renderNoWords = (hasWords) => {
   }
 };
 
-export default function WordList({ words, onDelete, selectWord }) {
+export default function WordList({ onDelete, words }) {
   const classes = useStyles();
 
   return (

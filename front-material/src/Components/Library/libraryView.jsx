@@ -4,6 +4,7 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+import TextField from "@material-ui/core/TextField";
 
 import WordList from "./wordList";
 import NewWord from "./newWord";
@@ -19,11 +20,12 @@ class Library extends Component {
 
   async componentDidMount() {
     const { data: words } = await getWords();
-    this.setState({ words });
+    this.setState({ words, filteredWords: words });
   }
 
   state = {
     words: [],
+    filteredWords: [],
     snackbar: {
       openSnackbar: false,
       message: "",
@@ -76,8 +78,16 @@ class Library extends Component {
   render() {
     const { openSnackbar, message, severity } = this.state.snackbar;
     const wordCount = this.state.words.length;
+
+    const onSearch = ({ currentTarget: input }) => {
+      const { value: search } = input;
+      const { words } = this.state;
+      let filteredWords = words.filter((word) => word.meaning.includes(search));
+      this.setState({ filteredWords });
+    };
+    const { filteredWords } = this.state;
     return (
-      <Grid container item xs={12} spacing={2}>
+      <div>
         <Snackbar
           open={openSnackbar}
           autoHideDuration={3000}
@@ -88,21 +98,50 @@ class Library extends Component {
             {message}
           </this.Alert>
         </Snackbar>
-        <Grid item xs={12}>
-          <Typography variant="h2">Library PO</Typography>
-          <Typography variant="subtitle1">
-            {wordCount} words in total
-          </Typography>
+        <Grid container spacing={2} direction="column">
+          <Grid item>
+            <Typography variant="h2">Library PO</Typography>
+          </Grid>
+          <Grid item xs={12} sm={8}>
+            <Grid
+              container
+              item
+              direction="row"
+              alignContent="center"
+              alignItems="center"
+              justify="space-between"
+            >
+              <Grid item xs={12} sm={3}>
+                <Typography>Showing {wordCount} words.</Typography>
+              </Grid>
+              <Grid item xs={12} sm={5} style={{ paddingRight: 20 }}>
+                <form>
+                  <TextField
+                    fullWidth
+                    placeholder="Type a word"
+                    autoComplete="off"
+                    variant="outlined"
+                    label="Search a word"
+                    onChange={onSearch}
+                  ></TextField>
+                </form>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item>
+            <Grid container item direction="row" spacing={4}>
+              <Grid item md={8} xs={12}>
+                <Paper elevation={3}>
+                  <WordList words={filteredWords} onDelete={this.deleteWord} />
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <NewWord onAddWord={this.addWord} />
+              </Grid>
+            </Grid>
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={4}>
-          <NewWord onAddWord={this.addWord} />
-        </Grid>
-        <Grid item md={8} xs={12}>
-          <Paper elevation={3}>
-            <WordList words={this.state.words} onDelete={this.deleteWord} />
-          </Paper>
-        </Grid>
-      </Grid>
+      </div>
     );
   }
 }
