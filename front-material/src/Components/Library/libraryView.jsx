@@ -98,8 +98,8 @@ class Library extends Component {
           </this.Alert>
         </Snackbar>
         <Grid container spacing={2} direction="column">
-          <Grid item>
-            <Typography variant="h2">Library PO</Typography>
+          <Grid item style={{ marginTop: 20 }}>
+            <Typography variant="h3">Library</Typography>
           </Grid>
           <Grid item xs={12} sm={8}>
             <Grid

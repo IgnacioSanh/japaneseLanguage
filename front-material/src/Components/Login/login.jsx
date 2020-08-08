@@ -40,11 +40,7 @@ export default function Login(props) {
     email: "",
     password: "",
   };
-  const testLogin = {
-    email: "ignacio.sanhueza.l2@gmail.com",
-    password: "spunk707",
-  };
-  const [user, setUser] = useState(testLogin);
+  const [user, setUser] = useState(baseLogin);
   const [errors, setErrors] = useState(baseLogin);
   const { setAuthTokens } = useAuth();
   let history = useHistory();

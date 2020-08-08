@@ -3,6 +3,7 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Hidden from "@material-ui/core/Hidden";
+import CssBaseline from "@material-ui/core/CssBaseline";
 import Toast from "../Common/Toast";
 import { Switch, Route, Link } from "react-router-dom";
 
@@ -53,6 +54,7 @@ class PracticeView extends Component {
     const { open, message, severity } = this.state.toast;
     return (
       <div styles={{ flexGrow: 1 }}>
+        <CssBaseline />
         <Grid container direction="column" spacing={2}>
           <Hidden xsDown={true}>
             <Grid item xs={12}>
