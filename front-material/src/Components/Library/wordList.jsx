@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -43,56 +43,58 @@ const renderNoWords = (hasWords) => {
 
 export default function WordList({ onDelete, words }) {
   const classes = useStyles();
+  const hasWords = words.length > 0;
 
   return (
     <div className={classes.root}>
       <List>
-        {renderNoWords(words.length > 0)}
-        {words.map(({ original, meaning, _id, knowledge }) => {
-          const labelId = `checkbox-list-label-${_id}`;
-          return (
-            <ListItem
-              key={_id}
-              classes={{ root: classes.leftBorder }}
-              role={undefined}
-              dense
-              button
-            >
-              <ListItemText
-                id={labelId}
-                primary={original}
-                classes={{ primary: classes.textPrimary }}
-                secondary={meaning}
-              />
-              <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  aria-label="comments"
-                  color={knowledge ? "primary" : "default"}
-                >
-                  <ThumbUpIcon />
-                </IconButton>
-                <IconButton
-                  edge="end"
-                  aria-label="comments"
-                  color={knowledge ? "default" : "primary"}
-                >
-                  <ThumbDownIcon />
-                </IconButton>
-                <IconButton
-                  edge="end"
-                  aria-label="comments"
-                  color="secondary"
-                  onClick={() => {
-                    onDelete(_id);
-                  }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          );
-        })}
+        {renderNoWords(hasWords)}
+        {hasWords &&
+          words.map(({ original, meaning, _id, knowledge }) => {
+            const labelId = `checkbox-list-label-${_id}`;
+            return (
+              <ListItem
+                key={_id}
+                classes={{ root: classes.leftBorder }}
+                role={undefined}
+                dense
+                button
+              >
+                <ListItemText
+                  id={labelId}
+                  primary={original}
+                  classes={{ primary: classes.textPrimary }}
+                  secondary={meaning}
+                />
+                <ListItemSecondaryAction>
+                  <IconButton
+                    edge="end"
+                    aria-label="comments"
+                    color={knowledge ? "primary" : "default"}
+                  >
+                    <ThumbUpIcon />
+                  </IconButton>
+                  <IconButton
+                    edge="end"
+                    aria-label="comments"
+                    color={knowledge ? "default" : "primary"}
+                  >
+                    <ThumbDownIcon />
+                  </IconButton>
+                  <IconButton
+                    edge="end"
+                    aria-label="comments"
+                    color="secondary"
+                    onClick={() => {
+                      onDelete(_id);
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            );
+          })}
       </List>
     </div>
   );

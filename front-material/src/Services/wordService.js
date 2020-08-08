@@ -13,8 +13,8 @@ export async function getWords() {
   return res;
 }
 
-export async function getPracticeWords(userId) {
-  const urlGet = `${url}/practice/${userId}`;
+export async function getPracticeWords() {
+  const urlGet = `${url}/practice/`;
   const { data } = await http.get(urlGet);
   return data;
 }

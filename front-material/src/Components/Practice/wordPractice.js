@@ -44,9 +44,7 @@ const WordPractice = (props) => {
   //First load
   useEffect(() => {
     const fetchWords = async () => {
-      const { words: practiceWords } = await getPracticeWords(
-        "5f11dbed64aebf129629a9fc"
-      );
+      const { words: practiceWords } = await getPracticeWords();
       getCurrentWord(practiceWords);
     };
     fetchWords();
@@ -159,39 +157,46 @@ const WordPractice = (props) => {
 
   return (
     <Paper elevation={3} className={classes.paperMargin}>
-      <Grid container item direction="column" spacing={4}>
-        <Grid item xs={false}>
-          <Hidden only="xs">
-            <Typography variant="h4" align="center" noWrap={true}>
-              {currentWord[mode]}
-            </Typography>
-          </Hidden>
-          <Hidden smUp>
-            <Typography variant="h6" align="center" noWrap={true}>
-              {currentWord[mode]}
-            </Typography>
-          </Hidden>
+      {!currentWord && (
+        <Typography variant="h5">
+          You have no words left! Training is over
+        </Typography>
+      )}
+      {currentWord && (
+        <Grid container item direction="column" spacing={4}>
+          <Grid item xs={false}>
+            <Hidden only="xs">
+              <Typography variant="h4" align="center" noWrap={true}>
+                {currentWord[mode]}
+              </Typography>
+            </Hidden>
+            <Hidden smUp>
+              <Typography variant="h6" align="center" noWrap={true}>
+                {currentWord[mode]}
+              </Typography>
+            </Hidden>
+          </Grid>
+          <Grid item xs={12}>
+            <form className={classes.form}>
+              <TextField
+                autoComplete="off"
+                autoFocus={true}
+                fullWidth
+                onChange={handleInputChange}
+                value={answer}
+              ></TextField>
+            </form>
+          </Grid>
+          <Grid item>
+            <Hidden only="xs">
+              <ButtonSmallUp />
+            </Hidden>
+            <Hidden smUp>
+              <ButtonXS />
+            </Hidden>
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <form className={classes.form}>
-            <TextField
-              autoComplete="off"
-              autoFocus={true}
-              fullWidth
-              onChange={handleInputChange}
-              value={answer}
-            ></TextField>
-          </form>
-        </Grid>
-        <Grid item>
-          <Hidden only="xs">
-            <ButtonSmallUp />
-          </Hidden>
-          <Hidden smUp>
-            <ButtonXS />
-          </Hidden>
-        </Grid>
-      </Grid>
+      )}
     </Paper>
   );
 };

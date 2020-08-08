@@ -3,8 +3,11 @@ const config = require("../config/key");
 
 const auth = async (req, res, next) => {
   try {
-    let token = req.get("x-auth");
-    if (!token) return next();
+    const token = req.header("token");
+    if (!token) {
+      res.status(404).json({ Error: "aaaaaahhhhh" });
+      next(res);
+    }
     let user = await User.findByToken(token, config.privateKey);
     if (!user) {
       return res.json({ isAuth: false, error: true });
@@ -12,25 +15,8 @@ const auth = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
-    console.log("The token was not found");
-    next();
+    next(res.status(404));
   }
 };
 
-const auth2 = async (req, res, next) => {
-  try {
-    const token = req.get("x-auth");
-    console.log("Auth2", token);
-    if (!token) {
-      console.log("Auth2", "Redirecting to role error");
-      // res.status(300).json({ error: "User not logged in" });
-      res.redirect("/api/error/role");
-    }
-    next();
-  } catch (err) {
-    console.log("There was an error founding the token");
-    next();
-  }
-};
-
-module.exports = { auth, auth2 };
+module.exports = { auth };

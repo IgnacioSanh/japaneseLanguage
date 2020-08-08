@@ -19,7 +19,8 @@ class Library extends Component {
   };
 
   async componentDidMount() {
-    const { data: words } = await getWords();
+    const { data } = await getWords();
+    const words = data.words;
     this.setState({ words, filteredWords: words });
   }
 
@@ -34,8 +35,6 @@ class Library extends Component {
   };
 
   addWord = async (word) => {
-    //Add the user id
-    word = { ...word, userId: "5f11dbed64aebf129629a9fc" };
     //Save in the DB
     const { error, word: retWord } = await saveWord(word);
     if (error) console.log(error);
