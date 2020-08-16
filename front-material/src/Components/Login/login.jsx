@@ -64,7 +64,10 @@ export default function Login(props) {
     } else {
       //Send request
       const { email, password } = user;
-      const { token, user: retUser } = await login(email, password);
+      const { token, user: retUser, error } = await login(email, password);
+      if (error) {
+        setErrors(error);
+      }
       if (token) {
         setAuthTokens(token, retUser);
         history.push("/");

@@ -24,19 +24,17 @@ router.post("/register", async (req, res) => {
     const user = new User(req.body);
     //Check if email is registered
     const users = await User.find({ email: user.email });
-    if (users.length === 0) {
-      //The email is not registered
-      const resp = await user.save(user);
-      return res.json({ successful: true });
-    } else {
-      //The email already exists
+    if (users.length > 0) {
       return res.json({
-        successful: false,
-        errors: [
-          { key: "email", errorMessage: "The email is already registered" },
-        ],
+        error: {
+          email: "The email is already in use",
+        },
       });
     }
+    await user.save();
+    return res.json({
+      user: { firstname: user.firstname, email: user.email },
+    });
   } catch (err) {
     console.log("Error in register", err.errmsg);
   }
@@ -49,14 +47,18 @@ router.post("/login", async (req, res) => {
   if (!user)
     return res.json({
       loggedIn: false,
-      error: "The entered mail does not exist",
+      error: {
+        email: "The entered email is not registered",
+      },
     });
   //Compare password
   let match = await user.comparePassword(password);
   if (!match)
     return res.json({
       loggedIn: false,
-      error: "The password is not correct",
+      error: {
+        password: "Wrong password",
+      },
     });
   //Save Token
   await user.saveToken(config.privateKey);

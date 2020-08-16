@@ -8,7 +8,10 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Joi from "@hapi/joi";
-import { register } from "../../Services/authService";
+import { useHistory } from "react-router-dom";
+
+import { register, login } from "../../Services/authService";
+import { useAuth } from "../../Context/auth";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -39,13 +42,6 @@ const Register = () => {
     password: "",
   };
 
-  const testUser = {
-    firstname: "Ignacio",
-    lastname: "Sanhueza",
-    email: "ignacio.sanhueza.l2@gmail.com",
-    password: "spunk707",
-  };
-
   const schema = {
     firstname: Joi.string().required().label("First name"),
     lastname: Joi.string(),
@@ -53,8 +49,10 @@ const Register = () => {
     password: Joi.string().min(2).required().label("Password"),
   };
 
-  const [user, setUser] = useState(testUser);
+  const [user, setUser] = useState(baseUser);
   const [errors, setErrors] = useState(baseUser);
+  let history = useHistory();
+  const { setAuthTokens } = useAuth();
 
   const handleChange = ({ currentTarget: input }) => {
     const { value, name } = input;
@@ -76,6 +74,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    //First validation
     const validation = Joi.object(schema).validate(user, { abortEarly: false });
     if (validation.error) {
       console.log("Validation error", validation.error);
@@ -85,17 +84,26 @@ const Register = () => {
         newErrors[name] = error.message;
       });
       setErrors(newErrors);
-    } else {
-      const response = await register(user);
-      if (response.errors) {
-        const postErrors = response.errors;
-        let newErrors = { ...errors };
-        postErrors.forEach((err) => {
-          newErrors[err.key] = err.errorMessage;
-        });
-        setErrors(newErrors);
-        return;
-      }
+      return;
+    }
+    //No validation errors
+    const { error } = await register(user);
+    //Check for back errors
+    if (error) {
+      setErrors(error);
+      return;
+    }
+    //Login the user and redirect
+    const { token, user: retUser, error: loginError } = await login(
+      user.email,
+      user.password
+    );
+    if (loginError) {
+      setErrors(loginError);
+    }
+    if (token) {
+      setAuthTokens(token, retUser);
+      history.push("/");
     }
   };
 
@@ -123,7 +131,7 @@ const Register = () => {
           id="firstname"
           autoComplete="off"
           helperText={errors.firstname}
-          error={errors.firstname !== ""}
+          error={errors.firstname === undefined}
           onChange={handleChange}
           value={firstName}
         />

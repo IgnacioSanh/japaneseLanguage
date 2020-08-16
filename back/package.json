@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "MERN base boilerplate for projects",
   "main": "index.js",
+  "engines": {
+    "node": "12.16.1"
+  },
   "scripts": {
     "backend": "nodemon index.js"
   },
